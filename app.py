@@ -26,7 +26,7 @@ productos = [
 
 @app.route("/")
 def portal():
-    return render_template("portal.html", productos=productos)
+    return render_template("index.html", productos=productos)
 
 @app.route("/agregar/<int:producto_id>")
 def agregar_carrito(producto_id):
