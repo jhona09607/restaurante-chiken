@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finalizar Compra - Cashapamba's Chicken Duk</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff8f0;
+      margin: 0;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(135deg, #d32f2f, #b71c1c);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 { margin: 0; font-size: 2.5rem; }
+    main { padding: 30px; max-width: 600px; margin: auto; }
+    section { margin-bottom: 30px; }
+    h2 { color: #d32f2f; }
+    ul { list-style: none; padding: 0; }
+    ul li { padding: 5px 0; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input[type="file"] { padding: 5px; }
+    button { background: #d32f2f; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #b71c1c; }
+    footer {
+      background: linear-gradient(135deg, #b71c1c, #880e4f);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Finalizar Compra</h1>
+    <p>Cashapamba's Chicken Duk</p>
+  </header>
+
+  <main>
+    <section class="resumen">
+      <h2>Resumen de tu pedido</h2>
+      <div id="resumen-pedido"></div>
+    </section>
+
+    <section class="comprobante">
+      <h2>Subir comprobante de pago</h2>
+      <form id="form-comprobante">
+        <label for="comprobante">Selecciona tu comprobante (JPG, PNG, PDF):</label>
+        <input type="file" id="comprobante" name="comprobante" accept=".jpg,.png,.pdf" required>
+        <button type="submit">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Cashapamba's Chicken Duk. Todos los derechos reservados.</p>
+  </footer>
+
+<script>
+  // Tomar carrito desde localStorage
+  const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  const resumenDiv = document.getElementById("resumen-pedido");
+
+  if (carrito.length === 0) {
+    resumenDiv.innerHTML = "<p>No tienes productos en tu carrito.</p>";
+  } else {
+    let total = 0;
+    let html = "<ul>";
+    carrito.forEach(item => {
+      let subtotal = item.precio * item.cantidad;
+      total += subtotal;
+      html += `<li>${item.nombre} - $${item.precio.toFixed(2)} x ${item.cantidad} = <strong>$${subtotal.toFixed(2)}</strong></li>`;
+    });
+    html += `</ul><p><strong>Total a pagar: $${total.toFixed(2)}</strong></p>`;
+    resumenDiv.innerHTML = html;
+  }
+
+  // Manejo del formulario de comprobante
+  const form = document.getElementById("form-comprobante");
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById("comprobante");
+    if (fileInput.files.length === 0) {
+      alert("Por favor selecciona un comprobante.");
+      return;
+    }
+
+    // Crear resumen del pedido para WhatsApp
+    let mensaje = "🛒 Resumen de mi pedido:\n";
+    let total = 0;
+    carrito.forEach(item => {
+      let subtotal = item.precio * item.cantidad;
+      mensaje += `${item.nombre} - $${item.precio.toFixed(2)} x ${item.cantidad} = $${subtotal.toFixed(2)}\n`;
+      total += subtotal;
+    });
+    mensaje += `\n💵 Total: $${total.toFixed(2)}\n`;
+    mensaje += "📎 Comprobante: (adjunto aquí en el chat)";
+
+    // Codificar mensaje y abrir WhatsApp
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const numero = "593960762304"; // Número Ecuador
+    const urlWhatsapp = `https://wa.me/${numero}?text=${mensajeCodificado}`;
+
+    window.open(urlWhatsapp, "_blank");
+  });
+</script>
+
+</body>
+</html>

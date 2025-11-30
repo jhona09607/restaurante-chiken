@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito de Compras - Cashapamba's Chicken Duk</title>
+  <!-- Font Awesome para ícono de carrito -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #fff8f0;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(135deg, #d32f2f, #b71c1c);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+    }
+
+    nav {
+      background: #fbe9e7;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #b71c1c;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #d32f2f;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #d32f2f;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    .total {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 20px;
+      font-weight: bold;
+      color: #b71c1c;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background: #d32f2f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #b71c1c;
+    }
+
+    footer {
+      background: linear-gradient(135deg, #b71c1c, #880e4f);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .finalizar-container {
+      margin-top: 20px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cashapamba's Chicken Duk</h1>
+    <p>El sabor que une a las familias</p>
+  </header>
+
+  <nav>
+    <a href="{{ url_for('portal') }}">Inicio</a>
+    <a href="{{ url_for('ver_carrito') }}" style="float:right;">🛒 Carrito</a>
+  </nav>
+
+  <section>
+    <h2>🛒 Carrito de Compras</h2>
+    <table id="carritoTable">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio ($)</th>
+          <th>Cantidad</th>
+          <th>Subtotal ($)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="carritoBody">
+        <!-- Se llena con JS -->
+      </tbody>
+    </table>
+
+    <div class="total" id="total">Total: $0.00</div>
+
+    <!-- Botón para finalizar compra -->
+<div style="margin-top: 20px; text-align: right;">
+  <a href="{{ url_for('finalizar_compra') }}">
+    <button class="btn">Finalizar Compra 🛒</button>
+  </a>
+</div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Cashapamba's Chicken Duk. Todos los derechos reservados.</p>
+  </footer>
+
+<script>
+function cargarCarrito() {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  let carritoBody = document.getElementById("carritoBody");
+  let total = 0;
+  carritoBody.innerHTML = "";
+
+  carrito.forEach((item, index) => {
+    let subtotal = item.precio * item.cantidad;
+    total += subtotal;
+
+    let fila = `
+      <tr>
+        <td>${item.nombre}</td>
+        <td>${item.precio.toFixed(2)}</td>
+        <td>${item.cantidad}</td>
+        <td>${subtotal.toFixed(2)}</td>
+        <td><button class="btn" onclick="eliminarDelCarrito(${index})">Eliminar</button></td>
+      </tr>
+    `;
+    carritoBody.innerHTML += fila;
+  });
+
+  document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+
+  // Mostrar u ocultar botón de finalizar según carrito
+  let btnFinalizar = document.getElementById("btnFinalizar");
+  if (btnFinalizar) {
+    btnFinalizar.style.display = carrito.length > 0 ? "inline-block" : "none";
+  }
+}
+
+function eliminarDelCarrito(index) {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  carrito.splice(index, 1);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  cargarCarrito();
+}
+
+function finalizarCompra() {
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+  if(carrito.length === 0) {
+    alert("Tu carrito está vacío");
+    return;
+  }
+  // Guardamos el carrito para la página de finalizar
+  localStorage.setItem("carritoFinal", JSON.stringify(carrito));
+  // Redirigimos a finalizar.html
+  window.location.href = "finalizar.html";
+}
+
+// Evento de carga
+window.addEventListener('load', cargarCarrito);
+</script>
+
+</body>
+</html>

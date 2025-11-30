@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashapamba's Chicken Duk</title>
+  <!-- Font Awesome para ícono de carrito -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Overlay que cubre toda la pantalla */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #overlay img {
+      max-width: 150%;
+      max-height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #fff8f0;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(135deg, #d32f2f, #b71c1c);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+    }
+
+    nav {
+      background: #fbe9e7;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #b71c1c;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #d32f2f;
+    }
+
+    .filter-buttons {
+      margin-bottom: 20px;
+    }
+
+    .filter-buttons button {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .filter-buttons button:hover {
+      background: #b71c1c;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative; /* necesario para botón carrito */
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #b71c1c;
+    }
+
+    .card img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: transform 0.3s;
+    }
+
+    .card img:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-carrito {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: #d32f2f;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+      text-decoration: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    .btn-carrito:hover {
+      background-color: #b71c1c;
+    }
+
+    .btn-carrito i {
+      font-size: 1.2rem;
+    }
+
+    footer {
+      background: linear-gradient(135deg, #b71c1c, #880e4f);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Overlay de bienvenida -->
+  <div id="overlay">
+    <div class="overlay-content">
+      <img src="{{ url_for('static', filename='images/Pantalla_local.jpg') }}" alt="Pantalla de inicio">
+    </div>
+  </div>
+
+  <header>
+    <h1>Cashapamba's Chicken Duk</h1>
+    <p>El sabor que une a las familias</p>
+  </header>
+
+  <nav>
+    <a href="#menu">Menú</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+    <a href="{{ url_for('ver_carrito') }}" style="float:right;">🛒 Carrito</a>
+  </nav>
+
+<section id="menu">
+  <h2>Nuestro Menú</h2>
+  <div class="filter-buttons">
+    <button onclick="filterMenu('all')">Todos</button>
+    <button onclick="filterMenu('pollo')">Pollo</button>
+    <button onclick="filterMenu('wraps')">Wraps</button>
+    <button onclick="filterMenu('extras')">Extras</button>
+    <button onclick="filterMenu('bebidas')">Bebidas</button>
+    <button onclick="filterMenu('postres')">Postres</button>
+  </div>
+
+  <div class="menu">
+    <!-- Pollo -->
+    <div class="card pollo">
+      <h3>Pollo Entero Plus</h3>
+      <img style="width: 80%;" src="{{ url_for('static', filename='images/Pollo_12.50.jpg') }}" alt="Pollo Entero Plus">
+      <p>Pollo entero asado acompañado de papas fritas, una gaseosa y ensalada.</p>
+      <strong>$12.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Pollo Entero Plus', 12.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card pollo">
+      <h3>1/2 Pollo Asado</h3>
+      <img style="width: 82%;" src="{{ url_for('static', filename='images/Pollo_7.50.jpg') }}" alt="Medio Pollo Asado">
+      <p>Medio pollo asado acompañado de papas fritas, una gaseosa y ensalada.</p>
+      <strong>$7.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('1/2 Pollo Asado', 7.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card pollo">
+      <h3>Pollo Entero Especial</h3>
+      <img style="width: 80%;" src="{{ url_for('static', filename='images/Pollo_14.00.jpg') }}" alt="Pollo Entero Especial">
+      <p>Pollo entero asado, con papas fritas, ensalada, arroz y gaseosa familiar.</p>
+      <strong>$14.00</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Pollo Entero Especial', 14.00)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card pollo">
+      <h3>Combo Pollo Familiar</h3>
+      <img style="width: 82%;" src="{{ url_for('static', filename='images/Pollo_16.00.jpg') }}" alt="Pollo Familiar">
+      <p>Combo familiar con pollo entero, papas, arroz, ensalada y 4 bebidas.</p>
+      <strong>$16.00</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Combo Pollo Familiar', 16.00)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card pollo">
+      <h3>Papi completa</h3>
+      <img src="{{ url_for('static', filename='images/Papi_completa.jpg') }}" alt="Papi completa">
+      <p>Platillo con Pollo + carne + huevo + salchicha y ensalada.</p>
+      <strong>$3.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Papi completa', 3.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card pollo">
+      <h3>Papi pollo</h3>
+      <img src="{{ url_for('static', filename='images/Papi_pollo.jpg') }}" alt="Papi Pollo">
+      <p>Contiene 1/8 de pollo + papas y ensalada.</p>
+      <strong>$2.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Papi pollo', 2.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <!-- Wraps -->
+    <div class="card wraps">
+      <h3>Wraps de Pollo</h3>
+      <img src="{{ url_for('static', filename='images/wrap_pollo.jpg') }}" alt="Wrap de Pollo">
+      <p>Tortilla, lechuga, pollo, queso, mayonesa, tomate y cebolla.</p>
+      <strong>$2.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Wraps de Pollo', 2.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card wraps">
+      <h3>Wraps de carne</h3>
+      <img src="{{ url_for('static', filename='images/wrap_carne.jpg') }}" alt="Wrap de carne">
+      <p>Tortilla, lechuga, carne, queso, mayonesa, tomate y cebolla.</p>
+      <strong>$2.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Wraps de carne', 2.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card wraps">
+      <h3>Wraps mixtos</h3>
+      <img src="{{ url_for('static', filename='images/wrap_mixto.jpg') }}" alt="Wrap mixto">
+      <p>Tortilla, lechuga, carne, pollo, chorizo, mayonesa, tomate y cebolla.</p>
+      <strong>$3.80</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Wraps mixtos', 3.80)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <!-- Extras -->
+    <div class="card extras">
+      <h3>Humita</h3>
+      <img src="{{ url_for('static', filename='images/Humita.jpg') }}" alt="Humita">
+      <p>Humitas de dulce o de sal.</p>
+      <strong>$1.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Humita', 1.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card extras">
+      <h3>Tamal</h3>
+      <img src="{{ url_for('static', filename='images/Tamal.jpg') }}" alt="Tamal">
+      <p>Tamal relleno de pollo o carne.</p>
+      <strong>$1.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Tamal', 1.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card extras">
+      <h3>Quimbolito</h3>
+      <img src="{{ url_for('static', filename='images/Quimbolito.jpg') }}" alt="Quimbolito">
+      <p>Quimbolito pequeños pastelitos.</p>
+      <strong>$1.25</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Quimbolito', 1.25)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <!-- Postres -->
+    <div class="card postres">
+      <h3>Tiramisú</h3>
+      <img style="width: 80%;" src="{{ url_for('static', filename='images/Tiramisu.jpg') }}" alt="Tiramisú">
+      <p>Postre italiano con café y queso mascarpone.</p>
+      <strong>$2.00</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Tiramisú', 2.00)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <div class="card postres">
+      <h3>Helado Artesanal</h3>
+      <img src="{{ url_for('static', filename='images/Helado_artesanal.jpg') }}" alt="Helado Artesanal">
+      <p>Variedad de sabores: vainilla, chocolate, frutilla.</p>
+      <strong>$1.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Helado Artesanal', 1.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+    <!-- Bebidas -->
+    <div class="card bebidas">
+      <h3>Jarra de Jugo Natural</h3>
+      <img src="{{ url_for('static', filename='images/Jugos_varios.jpg') }}" alt="Jugo Natural">
+      <p>Maracuyá, mora, piña o naranjilla.</p>
+      <strong>$2.50</strong>
+      <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Jarra de Jugo Natural', 2.50)"><i class="fas fa-shopping-cart"></i></a>
+    </div>
+
+<div class="card bebidas">
+  <h3>Batidos</h3>
+  <img src="{{ url_for('static', filename='images/Batidos.jpg') }}" alt="Batidos">
+  <p>Mora, guanabana, tomate o fresa.</p>
+  <strong>$1.50</strong>
+  <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Batidos', 1.50)">
+    <i class="fas fa-shopping-cart"></i>
+  </a>
+</div>
+<div class="card bebidas">
+  <h3>Cervesa</h3>
+  <img src="{{ url_for('static', filename='images/Cerveza_tradicional.jpg') }}" alt="Cerveza tradicional">
+  <p>Cervesa.</p>
+  <strong>$4.00</strong>
+  <a href="#" class="btn-carrito" onclick="agregarAlCarrito('Cerveza', 4.00)">
+    <i class="fas fa-shopping-cart"></i>
+  </a>
+</div>
+ </div> <!-- 👈 cierre de .menu -->
+</section> <!-- 👈 cierre de #menu -->
+<section class="info">
+  <div id="sobre-nosotros" class="sobre-nosotros">
+    <h2>Sobre Nosotros</h2>
+    <p>
+Cashapamba’s Chicken Duk nació como el sueño de una familia de cinco integrantes, uniendo esfuerzo, tradición y pasión por la buena comida. Abrimos nuestras puertas pocos meses antes de la pandemia, superando los desafíos con dedicación y amor por lo que hacemos. Hoy, seguimos ofreciendo a cada cliente platos frescos,
+ llenos de sabor y un ambiente cálido que refleja nuestro espíritu familiar.
+    </p>
+  </div>
+
+  <div id="Contacto"class="contactanos">
+    <h2>Contáctanos</h2>
+    <p>Dirección: Av. Principal, Cashapamba</p>
+    <p>Teléfono: +593 960 762 304</p>
+    <p>Correo: jhonayungan@gmail.com</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Cashapamba's Chicken Duk. Todos los derechos reservados.</p>
+</footer>
+
+  <script>
+    function filterMenu(category) {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.style.display = (category === 'all' || card.classList.contains(category)) ? 'flex' : 'none';
+      });
+    }
+
+    // Cerrar overlay al hacer clic fuera de la imagen
+    document.getElementById("overlay").addEventListener("click", function(e) {
+      if (e.target === this) {
+        this.style.display = "none";
+      }
+    });
+  function agregarAlCarrito(nombre, precio) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    // Revisar si ya existe el producto
+    let productoExistente = carrito.find(item => item.nombre === nombre);
+    if (productoExistente) {
+      productoExistente.cantidad += 1;
+    } else {
+      carrito.push({ nombre: nombre, precio: precio, cantidad: 1 });
+    }
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    alert(nombre + " agregado al carrito ✅");
+  }
+  </script>
+</body>
+</html>
